@@ -1,0 +1,21 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert/strict'),JSZip=require('jszip'),{DOMParser,XMLSerializer}=require('@xmldom/xmldom');
+const c={JSZip,DOMParser,XMLSerializer,crypto:require('crypto').webcrypto,Uint8Array,atob,btoa};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../dist/engine.js'),'utf8')+';globalThis.e=ThesisEngine;globalThis.d=DEFAULT;',c);
+(async()=>{
+  const w='http://schemas.openxmlformats.org/wordprocessingml/2006/main',z=new JSZip();
+  const run=t=>'<w:r><w:t>'+t+'</w:t></w:r>',hyphen='<w:r><w:noBreakHyphen/></w:r>',field=(instruction,value)=>'<w:fldSimple w:instr="'+instruction+'">'+run(value)+'</w:fldSimple>';
+  const table=run('表 ')+field(' STYLEREF 1 ','3')+hyphen+field(' SEQ Table ','1')+run(' 符号说明');
+  const figure=run('图 ')+field(' STYLEREF 1 ','5')+hyphen+field(' SEQ Figure ','1')+run(' 环保宣传强度对社会总福利的影响');
+  z.file('word/document.xml','<w:document xmlns:w="'+w+'"><w:body><w:p>'+run('如表 ')+field(' REF table ','3')+hyphen+field(' REF table ','1')+run('、图 5‑1 和图 5-2 所示。')+'</w:p><w:p>'+table+'</w:p><w:p>'+figure+'</w:p><w:p>'+run('图 5‑2 环保宣传强度对企业利润的影响')+'</w:p><w:sectPr/></w:body></w:document>');
+  z.file('word/styles.xml','<w:styles xmlns:w="'+w+'"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:eastAsia="宋体" w:ascii="Times New Roman"/><w:sz w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>');
+  const data=await z.generateAsync({type:'uint8array'}),r=await c.e.inspect(data,{...c.d,check_caption:true},{'0':'body_start'});
+  assert.deepEqual(Array.from(r.caption_details,x=>x.number),['3-1','5-1','5-2']);
+  assert(r.caption_details.every(x=>x.referenced));
+  assert(!r.issues.some(x=>['图表引用待核对','题注编号跳跃','题注编号顺序','题注重复'].includes(x.kind)));
+  assert(r.paragraphs[0].text.includes('表 3-1'));
+  const fixes=r.issues.filter(x=>x.kind==='题注字号'&&x.fix);assert(fixes.length);
+  const m=await c.e.modify(data,r,fixes.map(x=>x.id)),out=await JSZip.loadAsync(m.output),xml=await out.file('word/document.xml').async('string');
+  assert.equal((xml.match(/<w:noBreakHyphen\s*\/>/g)||[]).length,3);
+  assert(xml.includes(field(' STYLEREF 1 ','3')));assert(xml.includes(field(' SEQ Table ','1')));
+  assert(m.recheck.caption_details.every(x=>x.referenced));assert(m.recheck.preservation_verified);
+  console.log('PASS: OOXML and literal nonbreaking hyphens in field captions/references, numbered sequences, selected corrections preserve fields and special characters');
+})().catch(e=>{console.error(e);process.exit(1)});
