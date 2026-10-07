@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "node lists.cjs && node header-footer.cjs && node captions.cjs && node caption-hyphens.cjs && node table-captions.cjs && node caption-position.cjs && node caption-references.cjs && node content.cjs && node toc.cjs && node language-fonts.cjs && node author-year.cjs && node word-count.cjs && node number-size.cjs && node page-settings.cjs"
+    "test": "node lists.cjs && node header-footer.cjs && node captions.cjs && node caption-hyphens.cjs && node table-captions.cjs && node caption-position.cjs && node caption-references.cjs && node content.cjs && node toc.cjs && node language-fonts.cjs && node author-year.cjs && node word-count.cjs && node number-size.cjs && node page-settings.cjs && node rule-profiles.cjs && node structure-hints.cjs"
   },
   "devDependencies": {
     "@xmldom/xmldom": "^0.9.8",
