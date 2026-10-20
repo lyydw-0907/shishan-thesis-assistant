@@ -44,11 +44,25 @@
 
 文件或规则改变后需要重新检查。程序不覆盖原文件；“清除本次检查”、刷新或关闭页面会清除会话，请及时下载结果。
 
-## 界面示意
+## 操作截图
 
-下图为已有早期设置页截图，不含论文内容；当前版本布局、字段及说明已有更新，以运行页面为准。
+以下为版本 2 的构造示例，不含真实论文。
 
-![格式方案设置页示意](docs/screenshots/settings-early.png)
+**1. 选择论文与格式方案**
+
+<p align="center"><img src="docs/screenshots/01-select-scheme.jpg" alt="选择DOCX论文及基础格式方案" width="720"></p>
+
+**2. 点击问题位置，查看原文与前后文**
+
+当前段落会突出显示；需要纠正分类时，可直接跳转到对应段落。
+
+<p align="center"><img src="docs/screenshots/02-locate-context.jpg" alt="检查项原文定位、前后文及段落分类入口" width="720"></p>
+
+**3. 核对修改范围，确认后生成副本**
+
+下载修改副本后，仍需在 Word 中核对实际分页。
+
+<p align="center"><img src="docs/screenshots/03-confirm-changes.jpg" alt="预览所选修改并确认生成副本" width="720"></p>
 
 ## 隐私与处理方式
 
